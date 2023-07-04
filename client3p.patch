@@ -1,0 +1,103 @@
+---
+ client3.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/client3.py b/client3.py
+index 3fc09b7..e73447e 100644
+--- a/client3.py
++++ b/client3.py
+@@ -35,7 +35,7 @@ def getDataPoint(quote):
+     stock = quote['stock']
+     bid_price = float(quote['top_bid']['price'])
+     ask_price = float(quote['top_ask']['price'])
+-    price = bid_price
++    price = (bid_price + ask_price) / 2
+     return stock, bid_price, ask_price, price
+ 
+ 
+-- 
+2.34.1
+
+
+From ea26471b2ee0bc3fedcf934888e65c5eee65a7fe Mon Sep 17 00:00:00 2001
+From: Joe Ferrer <joe@theforage.com>
+Date: Wed, 1 Mar 2023 02:32:48 +1100
+Subject: [PATCH 2/4] Update getRatio
+
+---
+ client3.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/client3.py b/client3.py
+index e73447e..1f1bef7 100644
+--- a/client3.py
++++ b/client3.py
+@@ -42,7 +42,9 @@ def getDataPoint(quote):
+ def getRatio(price_a, price_b):
+     """ Get ratio of price_a and price_b """
+     """ ------------- Update this function ------------- """
+-    return 1
++    if (price_b === 0):
++        return
++    return price_a / price_b
+ 
+ 
+ # Main
+-- 
+2.34.1
+
+
+From 2558a2e81380ac17b8b85db1926f4f4f016cc60b Mon Sep 17 00:00:00 2001
+From: Joe Ferrer <joe@theforage.com>
+Date: Wed, 1 Mar 2023 02:40:57 +1100
+Subject: [PATCH 3/4] Update main
+
+---
+ client3.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/client3.py b/client3.py
+index 1f1bef7..a517f2c 100644
+--- a/client3.py
++++ b/client3.py
+@@ -54,8 +54,10 @@ if __name__ == "__main__":
+         quotes = json.loads(urllib.request.urlopen(QUERY.format(random.random())).read())
+ 
+         """ ----------- Update to get the ratio --------------- """
++        prices = {}
+         for quote in quotes:
+             stock, bid_price, ask_price, price = getDataPoint(quote)
++            prices[stock] = price
+             print("Quoted %s at (bid:%s, ask:%s, price:%s)" % (stock, bid_price, ask_price, price))
+ 
+-        print("Ratio %s" % getRatio(price, price))
++        print("Ratio %s" % getRatio(prices["ABC"], prices["DEF"]))
+-- 
+2.34.1
+
+
+From a784bacee6366ddf623cfe6250a2fe6bd1beff08 Mon Sep 17 00:00:00 2001
+From: Joe Ferrer <joe@theforage.com>
+Date: Wed, 1 Mar 2023 02:41:52 +1100
+Subject: [PATCH 4/4] Fix bug
+
+---
+ client3.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/client3.py b/client3.py
+index a517f2c..65967b2 100644
+--- a/client3.py
++++ b/client3.py
+@@ -42,7 +42,7 @@ def getDataPoint(quote):
+ def getRatio(price_a, price_b):
+     """ Get ratio of price_a and price_b """
+     """ ------------- Update this function ------------- """
+-    if (price_b === 0):
++    if (price_b == 0):
+         return
+     return price_a / price_b
+ 
+-- 
+2.34.1
+
